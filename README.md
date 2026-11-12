@@ -7,6 +7,7 @@ FactWise Care is a local-first patient operations prototype for coordinating dai
 Requirements: Python 3.12+ and Node.js 20+.
 
 1. Copy `.env.example` to `.env` and set `SECRET_KEY` to a long random value. Keep `COOKIE_SECURE=false` for local HTTP.
+   The frontend uses Vite's `/api` proxy to `http://127.0.0.1:8000` by default. To override it, copy `frontend/.env.example` to `frontend/.env.local` and set `VITE_API_BASE_URL`.
 2. In a terminal, install backend dependencies and start the API:
 
    ```powershell
@@ -57,7 +58,9 @@ FastAPI serves the built SPA when `frontend/dist` exists. The app expects one or
 
 ## Deployment
 
-Use the included `Dockerfile` on a container host that supports a persistent volume. Mount the volume at `/data`, set `DATABASE_URL=sqlite:////data/factwise.db`, set a unique `SECRET_KEY`, and set `COOKIE_SECURE=true`. Configure the host health check to `/healthz`. The frontend and API are served from the same origin. Do not deploy SQLite on an ephemeral serverless filesystem.
+Use the included `Dockerfile` on a container host that supports a persistent volume. Mount the volume at `/data`, set `DATABASE_URL=sqlite:////data/factwise.db`, set a unique `SECRET_KEY`, and set `COOKIE_SECURE=true`. For a separately hosted frontend, set `CORS_ALLOWED_ORIGINS` to its exact HTTPS origin. Configure the host health check to `/healthz`. The frontend and API are served from the same origin. Do not deploy SQLite on an ephemeral serverless filesystem.
+
+For Vercel + Render, configure `VITE_API_BASE_URL` in Vercel to the Render backend origin (for example `https://your-backend-service.onrender.com`, without `/api/v1`) and redeploy. On Render, set `CORS_ALLOWED_ORIGINS` to the Vercel origin and `COOKIE_SECURE=true`.
 
 No hosting account or volume-backed target is configured in this workspace, so a public demo URL has not been published. See [docs/demo-guide.md](docs/demo-guide.md) for role guidance and deployment notes.
 

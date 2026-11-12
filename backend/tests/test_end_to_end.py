@@ -16,6 +16,27 @@ def sign_in(client: TestClient, username: str) -> dict[str, str]:
 
 def test_admin_nurse_doctor_and_review_first_flows():
     with TestClient(app) as client:
+        preflight = client.options(
+            "/api/v1/auth/login",
+            headers={
+                "Origin": "http://localhost:5173",
+                "Access-Control-Request-Method": "POST",
+                "Access-Control-Request-Headers": "content-type,x-csrf-token",
+            },
+        )
+        assert preflight.status_code == 200
+        assert preflight.headers["access-control-allow-origin"] == "http://localhost:5173"
+        assert preflight.headers["access-control-allow-credentials"] == "true"
+        production_preflight = client.options(
+            "/api/v1/auth/login",
+            headers={
+                "Origin": "https://factwise-care.vercel.app",
+                "Access-Control-Request-Method": "POST",
+                "Access-Control-Request-Headers": "content-type,x-csrf-token",
+            },
+        )
+        assert production_preflight.status_code == 200
+        assert production_preflight.headers["access-control-allow-origin"] == ("https://factwise-care.vercel.app")
         unauthenticated = client.get("/api/v1/auth/me")
         assert unauthenticated.status_code == 200
         assert unauthenticated.json()["user"] is None

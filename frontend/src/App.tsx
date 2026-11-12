@@ -1,5 +1,5 @@
 import { type FormEvent, type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
-import { api, jsonBody, setCsrfToken, type Role, type User } from "./api";
+import { api, apiUrl, jsonBody, setCsrfToken, type Role, type User } from "./api";
 import type {
   AssistantRequest,
   Dashboard,
@@ -244,7 +244,7 @@ function DashboardScreen({ refreshKey, onError }: { refreshKey: number; onError:
     <div className="content-stack">
       <section className="intro-row">
         <div><span className="eyebrow">TODAY AT A GLANCE</span><h2>Facility operations</h2><p>Live status from active admissions and recorded care tasks.</p></div>
-        <a className="text-link" href="/api/v1/dashboard/export.csv">Download daily CSV <span>↗</span></a>
+        <a className="text-link" href={apiUrl("/api/v1/dashboard/export.csv")}>Download daily CSV <span>↗</span></a>
       </section>
       <section className="metric-grid">
         <Metric label="Beds occupied" value={`${data.occupied} / ${data.capacity}`} detail={`${data.available} available`} />

@@ -6,6 +6,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from fastapi import Depends, FastAPI, HTTPException, Request, status
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy import func, select, text
 from sqlalchemy.exc import IntegrityError
@@ -76,9 +77,16 @@ app.add_middleware(
     SessionMiddleware,
     secret_key=settings.secret_key,
     session_cookie=settings.session_cookie,
-    same_site="lax",
+    same_site="none" if settings.cookie_secure else "lax",
     https_only=settings.cookie_secure,
     max_age=12 * 60 * 60,
+)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[origin.strip() for origin in settings.cors_allowed_origins.split(",") if origin.strip()],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PATCH", "OPTIONS"],
+    allow_headers=["Content-Type", "X-CSRF-Token"],
 )
 
 

@@ -8,3 +8,6 @@ __pycache__/
 .env
 data/
 *.py[cod]
+.vercel
+.env*
+!.env.example
